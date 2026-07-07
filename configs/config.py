@@ -38,6 +38,8 @@ SUPPORTED_EXTENSIONS = (
     ".tiff",
     ".ndpi",
     ".mrxs",
+    ".png",
+    ".jpg"
 )
 
 
