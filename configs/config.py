@@ -48,6 +48,26 @@ SUPPORTED_TISSUE_METHODS = (
     "double_pass",
 )
 
+# ============================================================================
+# BCSS Semantic Classes
+# ============================================================================
+
+BACKGROUND_CLASS = 0
+
+BCSS_LABELS = {
+    1: "tumor",
+    2: "stroma",
+    3: "lymphocyte",
+    4: "necrosis",
+}
+
+LABEL_ORDER = [
+    "tumor",
+    "stroma",
+    "lymphocyte",
+    "necrosis",
+]
+
 
 def positive_int(value: str) -> int:
     """
@@ -114,7 +134,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     parser.add_argument(
-        "--wsi_dir",
+        "--image_dir",
         type=str,
         default="datasets/BCSS/imgs",
         help="Directory containing whole slide images."
@@ -132,6 +152,31 @@ def build_parser() -> argparse.ArgumentParser:
         type=str,
         default="outputs/",
         help="Output directory."
+    )
+
+    #######################################################
+    # Runtime options
+    #######################################################
+
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        default=False,
+        help="Enable debug mode."
+    )
+
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        default=False,
+        help="Validate configuration only."
+    )
+
+    parser.add_argument(
+        "--workers",
+        type=positive_int,
+        default=1,
+        help="Number of worker processes."
     )
 
     #######################################################
@@ -263,11 +308,11 @@ def validate_paths(args: argparse.Namespace) -> None:
     Validate dataset paths.
     """
 
-    wsi_dir = Path(args.wsi_dir)
+    image_dir = Path(args.image_dir)
 
-    if not wsi_dir.exists():
+    if not image_dir.exists():
         raise FileNotFoundError(
-            f"WSI directory not found:\n{wsi_dir}"
+            f"Image directory not found:\n{image_dir}"
         )
 
     mask_dir = Path(args.mask_dir)

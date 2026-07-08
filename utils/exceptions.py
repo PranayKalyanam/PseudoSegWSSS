@@ -85,6 +85,18 @@ class OutputDirectoryError(FileSystemError):
     """
 
 
+class FileWriteError(FileSystemError):
+    """
+    Raised when writing to a file fails.
+    """
+
+
+class FileReadError(FileSystemError):
+    """
+    Raised when reading from a file fails.
+    """
+
+
 # ==========================================================
 # Whole Slide Image Exceptions
 # ==========================================================
@@ -240,6 +252,19 @@ class MetadataError(DatasetError):
     """
     Raised when metadata is missing or corrupted.
     """
+
+
+# ==========================================================
+# Preprocessing
+# ==========================================================
+
+class PreprocessingError(HistoGraphWSLError):
+    """
+    Raised when preprocessing fails.
+    """
+
+    def __init__(self, message: str) -> None:
+        super().__init__(message)
 
 
 # ==========================================================
