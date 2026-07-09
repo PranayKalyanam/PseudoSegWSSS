@@ -74,14 +74,67 @@ class PatientLoader:
     # Public Interface
     # ---------------------------------------------------------
 
-    def load(self) -> List[Patient]:
+    # def load(self) -> List[Patient]:
+    #     """
+    #     Discover all patients.
+
+    #     Returns
+    #     -------
+    #     List[Patient]
+    #         Dataset patients.
+    #     """
+
+    #     self.logger.info(
+    #         "Discovering patients..."
+    #     )
+
+    #     image_pairs = pair_images_and_masks(
+    #         self.image_directory,
+    #         self.mask_directory,
+    #     )
+
+    #     patients = [
+    #         Patient(image_pair=pair)
+    #         for pair in image_pairs
+    #     ]
+
+    #     self.logger.info(
+    #         "Discovered %d patients.",
+    #         len(patients),
+    #     )
+
+    #     return patients
+    def load(
+        self,
+        image_pair: ImagePair,
+    ) -> Patient:
         """
-        Discover all patients.
+        Create a Patient object from an image-mask pair.
+
+        Parameters
+        ----------
+        image_pair
+            Image and annotation mask pair.
+
+        Returns
+        -------
+        Patient
+            Initialized patient object.
+        """
+
+        return Patient(
+            image_pair=image_pair
+        )
+
+
+    def load_all(self) -> List[Patient]:
+        """
+        Discover all patients in the dataset.
 
         Returns
         -------
         List[Patient]
-            Dataset patients.
+            List of discovered patients.
         """
 
         self.logger.info(
@@ -93,10 +146,13 @@ class PatientLoader:
             self.mask_directory,
         )
 
-        patients = [
-            Patient(image_pair=pair)
-            for pair in image_pairs
-        ]
+        patients = []
+
+        for image_pair in image_pairs:
+
+            patients.append(
+                self.load(image_pair)
+            )
 
         self.logger.info(
             "Discovered %d patients.",
@@ -104,7 +160,6 @@ class PatientLoader:
         )
 
         return patients
-
     # ---------------------------------------------------------
     # Convenience Properties
     # ---------------------------------------------------------

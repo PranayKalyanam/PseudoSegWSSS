@@ -1,82 +1,76 @@
-"""
-tissue_region.py
-
-Dataclass representing one connected tissue region detected
-during tissue segmentation.
-"""
-
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Any
-from typing import Dict
-from typing import Optional
+from dataclasses import dataclass
 
 import numpy as np
+
+from data.geometry.bounding_box import BoundingBox
+from data.image.image_size import ImageSize
 
 
 @dataclass(slots=True)
 class TissueRegion:
     """
     Represents one connected tissue region.
-
-    Attributes
-    ----------
-    region_id : int
-        Unique region identifier.
-
-    bbox : tuple
-        Bounding box (x, y, width, height).
-
-    contour : np.ndarray
-        Contour points.
-
-    mask : np.ndarray
-        Binary region mask.
-
-    image : np.ndarray
-        Cropped RGB image.
-
-    area : float
-        Region area.
-
-    tissue_percentage : float
-        Tissue percentage.
-
-    metadata : dict
-        Additional dataset-specific information.
     """
+
+    # --------------------------------------------------
+    # Identity
+    # --------------------------------------------------
 
     region_id: int
 
-    bbox: tuple[int, int, int, int]
+    # --------------------------------------------------
+    # Geometry
+    # --------------------------------------------------
 
-    contour: np.ndarray
+    bounding_box: BoundingBox
 
-    mask: np.ndarray
+    area: int
 
-    image: Optional[np.ndarray] = None
+    contour: np.ndarray | None = None
 
-    area: float = 0.0
+    # --------------------------------------------------
+    # Binary Mask
+    # --------------------------------------------------
 
-    tissue_percentage: float = 0.0
+    mask: np.ndarray | None = None
 
-    metadata: Dict[str, Any] = field(
-        default_factory=dict
-    )
+    # --------------------------------------------------
+    # Convenience
+    # --------------------------------------------------
 
     @property
     def x(self) -> int:
-        return self.bbox[0]
+        return self.bounding_box.x
 
     @property
     def y(self) -> int:
-        return self.bbox[1]
+        return self.bounding_box.y
 
     @property
     def width(self) -> int:
-        return self.bbox[2]
+        return self.bounding_box.width
 
     @property
     def height(self) -> int:
-        return self.bbox[3]
+        return self.bounding_box.height
+
+    @property
+    def right(self) -> int:
+        return self.bounding_box.right
+
+    @property
+    def bottom(self) -> int:
+        return self.bounding_box.bottom
+
+    @property
+    def center(self) -> tuple[float, float]:
+        return self.bounding_box.center
+
+    @property
+    def size(self) -> ImageSize:
+        return ImageSize(
+            width=self.width,
+            height=self.height,
+        )

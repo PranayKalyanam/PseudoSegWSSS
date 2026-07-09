@@ -54,7 +54,7 @@ def main():
         logger=logger,
     )
 
-    patients = patient_loader.load()
+    patients = patient_loader.load_all()
 
     logger.info("Patients discovered : %d", len(patients))
 

@@ -20,7 +20,7 @@ def main():
         logger=logger,
     )
 
-    patients = loader.load()
+    patients = loader.load_all()
 
     logger.info("")
 

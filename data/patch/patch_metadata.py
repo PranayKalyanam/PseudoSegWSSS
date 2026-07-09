@@ -1,56 +1,83 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
-from typing import Dict
-from typing import List
-from typing import Optional
 
 from data.patch.patch_coordinate import PatchCoordinate
-from data.patch.patch_label import PatchLabel
 
 
 @dataclass(slots=True)
 class PatchMetadata:
     """
-    Metadata associated with one extracted patch.
+    Metadata describing an extracted patch.
+
+    This class stores only spatial and acquisition
+    information. Labels and statistics are stored
+    separately.
     """
+
+    # --------------------------------------------------
+    # Identity
+    # --------------------------------------------------
 
     patch_id: int
 
     patient_id: str
 
-    patch_name: str
+    tissue_region_id: int
 
-    image_path: Optional[Path]
+    # --------------------------------------------------
+    # Source Files
+    # --------------------------------------------------
 
-    mask_path: Optional[Path]
+    image_path: Path
+
+    mask_path: Path
+
+    # --------------------------------------------------
+    # Spatial Information
+    # --------------------------------------------------
 
     coordinate: PatchCoordinate
 
-    tissue_region_id: int
+    width: int
 
-    tissue_percentage: float
+    height: int
+
+    # --------------------------------------------------
+    # Acquisition Information
+    # --------------------------------------------------
 
     magnification: float
 
-    label: PatchLabel
+    overlap: float
 
-    label_string: str = ""
+    patch_size: int
 
-    filename: str = ""
+    # --------------------------------------------------
+    # Convenience
+    # --------------------------------------------------
 
-    generated: bool = False
+    @property
+    def global_x(self) -> int:
+        return self.coordinate.global_x
 
-    generator: str = ""
+    @property
+    def global_y(self) -> int:
+        return self.coordinate.global_y
 
-    detected_classes: List[int] = field(default_factory=list)
+    @property
+    def filename_prefix(self) -> str:
+        """
+        Base filename before labels are appended.
 
-    class_statistics: Dict[int, Dict[str, float]] = field(
-        default_factory=dict
-    )
+        Example
+        -------
+        TCGA-001_x896_y448
+        """
 
-    additional_metadata: Dict[str, Any] = field(
-        default_factory=dict
-    )
+        return (
+            f"{self.patient_id}"
+            f"_x{self.global_x}"
+            f"_y{self.global_y}"
+        )
