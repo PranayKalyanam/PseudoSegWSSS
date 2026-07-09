@@ -1277,17 +1277,3 @@ class BCSSLabelGenerator(BaseLabelGenerator):
     """
     Concrete implementation for the BCSS dataset.
     """
-
-    def __init__(self, config):
-
-        super().__init__(config)
-
-    def generate_labels(
-        self,
-        mask,
-    ):
-        """
-        Generate binary weak labels from a BCSS segmentation mask.
-        """
-
-        return super().generate_labels(mask)

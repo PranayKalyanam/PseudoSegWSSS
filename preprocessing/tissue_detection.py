@@ -770,6 +770,7 @@ class OtsuTissueDetector(BaseTissueDetector):
         #
 
         tissue_mask = self.generate_mask(image)
+        
 
         #
         # Morphological refinement
@@ -800,6 +801,12 @@ class OtsuTissueDetector(BaseTissueDetector):
             refined_mask,
         )
         
+        # self.logger.info(
+        #         "generate_regions returned %d regions",
+        #         len(regions),
+        #     )
+
+        
         statistics = self.compute_slide_statistics(
             refined_mask,
             regions,
@@ -819,7 +826,11 @@ class OtsuTissueDetector(BaseTissueDetector):
         # Regions will be extracted in Section 3B.
         #
 
-        regions = []
+        # self.logger.info(
+        #     "Returning %d regions",
+        #     len(regions),
+        # )
+        
         return TissueDetectionResult(
             patient_id=patient_id,
             tissue_mask=tissue_mask,
@@ -1302,3 +1313,5 @@ class OtsuTissueDetector(BaseTissueDetector):
         )
 
         return regions
+    
+    

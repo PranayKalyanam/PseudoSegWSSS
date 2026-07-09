@@ -173,25 +173,25 @@ class PatchLabel:
      Stroma]
     """
 
-    tumor_type1: int = 0
-
-    tumor_type2: int = 0
-
-    cancer: int = 0
+    tumor: int = 0
 
     stroma: int = 0
+
+    lymphocyte: int = 0
+
+    necrosis: int = 0
 
     def as_list(self):
 
         return [
 
-            self.tumor_type1,
-
-            self.tumor_type2,
-
-            self.cancer,
+            self.tumor,
 
             self.stroma,
+
+            self.lymphocyte,
+
+            self.necrosis,
         ]
 
     def as_string(self):
@@ -213,7 +213,8 @@ class PatchMetadata:
     """
     Metadata associated with each extracted patch.
     """
-
+    patch_id: int
+    
     patient_id: str
 
     patch_name: str
@@ -458,7 +459,6 @@ class BasePatchExtractor(ABC):
         self,
         image: np.ndarray,
         mask: np.ndarray,
-        tissue_regions: List[TissueRegion],
     ):
 
         if image is None:
@@ -479,11 +479,6 @@ class BasePatchExtractor(ABC):
                 "Image and mask dimensions do not match."
             )
 
-        if len(tissue_regions) == 0:
-
-            self.logger.warning(
-                "No tissue regions detected."
-            )
 
     # -----------------------------------------------------------------
     # Filename Generation
@@ -593,10 +588,11 @@ class BasePatchExtractor(ABC):
     def extract(
         self,
         patient_id: str,
-        image_10x: np.ndarray,
-        annotation_mask: np.ndarray,
+        image: np.ndarray,
+        mask: np.ndarray,
         tissue_mask: np.ndarray,
-        tissue_regions: List[TissueRegion],
+        roi_origin: tuple[int, int],
+        region: TissueRegion,
     ) -> List[Patch]:
         """
         Extract patches from a WSI.
@@ -642,29 +638,19 @@ class BasePatchExtractor(ABC):
         # Region boundaries
         #
 
-        start_x = region.x
+        # start_x = region.x
 
-        start_y = region.y
+        # start_y = region.y
 
-        end_x = region.x + region.width
+        # end_x = region.x + region.width
 
-        end_y = region.y + region.height
+        # end_y = region.y + region.height
+        
+        start_x = 0
+        start_y = 0
 
-        #
-        # Ensure extraction stays inside image
-        #
-
-        max_x = image_width - patch_size
-
-        max_y = image_height - patch_size
-
-        start_x = max(start_x, 0)
-
-        start_y = max(start_y, 0)
-
-        end_x = min(end_x, max_x)
-
-        end_y = min(end_y, max_y)
+        end_x = image_width - patch_size
+        end_y = image_height - patch_size
 
         #
         # Sliding Window
@@ -1219,7 +1205,7 @@ class BasePatchExtractor(ABC):
 
     def create_patch(
         self,
-        patch_id: int,
+        currPatch_id: int,
         patient_id: str,
         region: TissueRegion,
         coordinate: PatchCoordinate,
@@ -1256,14 +1242,14 @@ class BasePatchExtractor(ABC):
             f"{patient_id}"
             f"_x{coordinate.x:06d}"
             f"_y{coordinate.y:06d}"
-            f"_p{patch_id:06d}"
+            f"_p{currPatch_id:06d}"
             f"_lbl{label.as_string()}"
             f"{self.config.image_extension}"
         )
 
         metadata = PatchMetadata(
 
-            patch_id=patch_id,
+            patch_id=currPatch_id,
 
             patient_id=patient_id,
 
@@ -1436,6 +1422,7 @@ class BasePatchExtractor(ABC):
         mask: np.ndarray,
         tissue_mask: np.ndarray,
         region: TissueRegion,
+        roi_origin: tuple[int, int],
         start_patch_id: int,
     ) -> Tuple[List[Patch], int]:
         """
@@ -1474,6 +1461,38 @@ class BasePatchExtractor(ABC):
             candidate_patches,
             tissue_mask,
         )
+        
+        
+        origin_x, origin_y = roi_origin
+
+        global_patches = []
+
+        for (
+                coordinate,
+                image_patch,
+                mask_patch,
+                tissue_patch,
+                tissue_percentage,
+            ) in accepted_patches:
+
+            global_coordinate = PatchCoordinate(
+                    x=origin_x + coordinate.x,
+                    y=origin_y + coordinate.y,
+                    width=coordinate.width,
+                    height=coordinate.height,
+                )
+
+            global_patches.append(
+                    (
+                        global_coordinate,
+                        image_patch,
+                        mask_patch,
+                        tissue_patch,
+                        tissue_percentage,
+                    )
+                )
+
+        accepted_patches = global_patches
 
         #
         # Create Patch objects
@@ -1496,7 +1515,8 @@ class BasePatchExtractor(ABC):
         image: np.ndarray,
         mask: np.ndarray,
         tissue_mask: np.ndarray,
-        tissue_regions: List[TissueRegion],
+        roi_origin: tuple[int, int],
+        region: TissueRegion,
     ) -> List[Patch]:
         """
         Extract patches from a complete WSI.
@@ -1530,7 +1550,6 @@ class BasePatchExtractor(ABC):
         self.validate_patch_inputs(
             image,
             mask,
-            tissue_regions,
         )
 
         if tissue_mask is None:
@@ -1543,53 +1562,48 @@ class BasePatchExtractor(ABC):
         # Storage
         #
 
-        extracted_patches: List[Patch] = []
 
-        patch_id = 0
 
         #
         # Region-wise processing
         #
 
-        for region in tissue_regions:
+        # for region in tissue_regions:
 
-            self.logger.info(
-                "Processing Region %d",
-                region.region_id,
-            )
+        #     self.logger.info(
+        #         "Processing Region %d",
+        #         region.region_id,
+        #     )
 
-            patches, patch_id = self.process_region(
+        #     patches, patch_id = self.process_region(
 
+        #         patient_id=patient_id,
+
+        #         image=image,
+
+        #         mask=mask,
+
+        #         tissue_mask=tissue_mask,
+
+        #         region=region,
+
+        #         start_patch_id=patch_id,
+
+        #     )
+
+        #     extracted_patches.extend(
+        #         patches
+        #     )
+        patches, _ = self.process_region(
                 patient_id=patient_id,
-
                 image=image,
-
                 mask=mask,
-
                 tissue_mask=tissue_mask,
-
                 region=region,
-
-                start_patch_id=patch_id,
-
+                roi_origin=roi_origin,
+                start_patch_id=0,
             )
+        self.logger.info("Finished extraction.")
+        self.logger.info("Total extracted patches : %d", len(patches))
 
-            extracted_patches.extend(
-                patches
-            )
-
-        self.logger.info(
-
-            "Finished extraction."
-
-        )
-
-        self.logger.info(
-
-            "Total extracted patches : %d",
-
-            len(extracted_patches),
-
-        )
-
-        return extracted_patches
+        return patches
