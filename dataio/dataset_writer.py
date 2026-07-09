@@ -57,6 +57,7 @@ import numpy as np
 from preprocessing.patch_extractor import PATCH_SIZE, Patch
 
 
+from utils import logger
 from utils.exceptions import (
     FileWriteError,
     ValidationError,
@@ -1763,6 +1764,15 @@ class DatasetWriter:
             #
 
             try:
+                self.logger.info(
+                            "Patch %d : x=%d y=%d slide_w=%d slide_h=%d",
+                            record.patch_id,
+                            record.x,
+                            record.y,
+                            record.slide_width,
+                            record.slide_height,
+                        )
+                
                 Validator.validate_patch_coordinate(
                     record.x,
                     record.y,

@@ -525,7 +525,7 @@ def main() -> int:
                     
                     logger.info("Extracted patches: %d", len(extracted_patches))
                     logger.info("Returned type: %s", type(labelled_patches))
-                    logger.info("Returned value: %s", labelled_patches)
+                    # logger.info("Returned value: %s", labelled_patches)
 
                     extracted_patch_count = 0
 
