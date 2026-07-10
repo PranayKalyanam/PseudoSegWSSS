@@ -50,11 +50,11 @@ class PatientLoader:
 
     def __init__(
         self,
-        config: get_config(),
+        config,
         logger=None,
     ) -> None:
 
-        self.config = config
+        self.config = get_config()
 
         self.logger = logger or get_logger("PatientLoader")
 
