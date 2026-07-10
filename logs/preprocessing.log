@@ -1,0 +1,67 @@
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] ================================================================================
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] IMAGE LOADER TEST
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] ================================================================================
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Discovering patients...
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Discovered 2 patients.
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Patients discovered : 2
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] 
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Loading images...
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] 
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Loading patient TCGA-A1-A0SK-DX1_xmin45749_ymin25055_MAG-10.00
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Successfully loaded TCGA-A1-A0SK-DX1_xmin45749_ymin25055_MAG-10.00
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Loading patient TCGA-A1-A0SP-DX1_xmin6798_ymin53719_MAG-10.00
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Successfully loaded TCGA-A1-A0SP-DX1_xmin6798_ymin53719_MAG-10.00
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] 
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] ================================================================================
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] IMAGE LOADING RESULTS
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] ================================================================================
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] 
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] --------------------------------------------------------------------------------
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Patient 1
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] --------------------------------------------------------------------------------
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Patient ID          : TCGA-A1-A0SK-DX1_xmin45749_ymin25055_MAG-10.00
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Image Path          : datasets\BCSS\imgs\TCGA-A1-A0SK-DX1_xmin45749_ymin25055_MAG-10.00.png
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Mask Path           : datasets\BCSS\masks\TCGA-A1-A0SK-DX1_xmin45749_ymin25055_MAG-10.00.png
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] 
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Image Loaded        : True
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] 
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Original Size       : 1010 x 734
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Working Size        : 252 x 184
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Channels            : 3
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Data Type           : uint8
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] 
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Source Magnification: 40.00x
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Target Magnification: 10.00x
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Scale Factor        : 0.2500
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] 
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Original Image Shape: (734, 1010, 3)
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Original Mask Shape : (734, 1010)
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Working Image Shape : (184, 252, 3)
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Working Mask Shape  : (184, 252)
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] 
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] --------------------------------------------------------------------------------
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Patient 2
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] --------------------------------------------------------------------------------
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Patient ID          : TCGA-A1-A0SP-DX1_xmin6798_ymin53719_MAG-10.00
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Image Path          : datasets\BCSS\imgs\TCGA-A1-A0SP-DX1_xmin6798_ymin53719_MAG-10.00.png
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Mask Path           : datasets\BCSS\masks\TCGA-A1-A0SP-DX1_xmin6798_ymin53719_MAG-10.00.png
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] 
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Image Loaded        : True
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] 
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Original Size       : 1439 x 1019
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Working Size        : 360 x 255
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Channels            : 3
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Data Type           : uint8
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] 
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Source Magnification: 40.00x
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Target Magnification: 10.00x
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Scale Factor        : 0.2500
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] 
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Original Image Shape: (1019, 1439, 3)
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Original Mask Shape : (1019, 1439)
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Working Image Shape : (255, 360, 3)
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] Working Mask Shape  : (255, 360)
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] 
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] ================================================================================
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] IMAGE LOADER TEST PASSED
+[2026-07-10 22:37:05] [INFO] [ImageLoaderTest] ================================================================================

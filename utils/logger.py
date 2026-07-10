@@ -114,7 +114,7 @@ def get_logger(
             exist_ok=True
         )
 
-        logfile = log_directory / "preprocessing.log"
+        logfile = log_directory / f"{name}.log"
 
         file_handler = logging.FileHandler(
             logfile,

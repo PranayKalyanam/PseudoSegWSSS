@@ -1,0 +1,20 @@
+[2026-07-10 22:40:07] [INFO] [PatientLoaderTest] ================================================================================
+[2026-07-10 22:40:07] [INFO] [PatientLoaderTest] PATIENT LOADER TEST
+[2026-07-10 22:40:07] [INFO] [PatientLoaderTest] ================================================================================
+[2026-07-10 22:40:07] [INFO] [PatientLoaderTest] Discovering patients...
+[2026-07-10 22:40:07] [INFO] [PatientLoaderTest] Discovered 2 patients.
+[2026-07-10 22:40:07] [INFO] [PatientLoaderTest] 
+[2026-07-10 22:40:07] [INFO] [PatientLoaderTest] Patients discovered : 2
+[2026-07-10 22:40:07] [INFO] [PatientLoaderTest] 
+[2026-07-10 22:40:07] [INFO] [PatientLoaderTest] ------------------------------------------------------------
+[2026-07-10 22:40:07] [INFO] [PatientLoaderTest] Patient 1
+[2026-07-10 22:40:07] [INFO] [PatientLoaderTest] ID          : TCGA-A1-A0SK-DX1_xmin45749_ymin25055_MAG-10.00
+[2026-07-10 22:40:07] [INFO] [PatientLoaderTest] Image       : datasets\BCSS\imgs\TCGA-A1-A0SK-DX1_xmin45749_ymin25055_MAG-10.00.png
+[2026-07-10 22:40:07] [INFO] [PatientLoaderTest] Mask        : datasets\BCSS\masks\TCGA-A1-A0SK-DX1_xmin45749_ymin25055_MAG-10.00.png
+[2026-07-10 22:40:07] [INFO] [PatientLoaderTest] ------------------------------------------------------------
+[2026-07-10 22:40:07] [INFO] [PatientLoaderTest] Patient 2
+[2026-07-10 22:40:07] [INFO] [PatientLoaderTest] ID          : TCGA-A1-A0SP-DX1_xmin6798_ymin53719_MAG-10.00
+[2026-07-10 22:40:07] [INFO] [PatientLoaderTest] Image       : datasets\BCSS\imgs\TCGA-A1-A0SP-DX1_xmin6798_ymin53719_MAG-10.00.png
+[2026-07-10 22:40:07] [INFO] [PatientLoaderTest] Mask        : datasets\BCSS\masks\TCGA-A1-A0SP-DX1_xmin6798_ymin53719_MAG-10.00.png
+[2026-07-10 22:40:07] [INFO] [PatientLoaderTest] 
+[2026-07-10 22:40:07] [INFO] [PatientLoaderTest] Test completed successfully.

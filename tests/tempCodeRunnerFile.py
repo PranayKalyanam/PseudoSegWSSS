@@ -1,1 +1,1 @@
-metadata_generator
+print

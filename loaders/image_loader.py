@@ -64,7 +64,8 @@ class ImageLoader:
         self.config = config
 
         self.logger = logger or get_logger(
-            "ImageLoader"
+            "ImageLoader",
+            log_dir="logs",
         )
 
     # --------------------------------------------------
