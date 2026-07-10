@@ -52,17 +52,31 @@ class Patch:
 
     patch_id: int
 
+    # Original image filename (without extension if preferred)
+    source_filename: str
+
     # ---------------------------------------------------------
     # Spatial Information
     # ---------------------------------------------------------
 
     coordinate: PatchCoordinate
 
+
     # ---------------------------------------------------------
     # Tissue Information
     # ---------------------------------------------------------
 
+    # Number of foreground (tissue) pixels
+    tissue_pixels: int = 0
+
+    # Number of background pixels
+    background_pixels: int = 0
+
+    # Tissue ratio (0.0 - 1.0)
     tissue_percentage: float = 0.0
+
+    # Background ratio (0.0 - 1.0)
+    background_percentage: float = 0.0
 
     # ---------------------------------------------------------
     # Image Data
@@ -113,6 +127,32 @@ class Patch:
     @property
     def area(self) -> int:
         return self.coordinate.width * self.coordinate.height
+    
+    @property
+    def total_pixels(self) -> int:
+        """
+        Total number of pixels in the patch.
+        """
+        return self.area
+
+
+    @property
+    def has_tissue(self) -> bool:
+        """
+        Returns True if the patch contains any tissue.
+        """
+        return self.tissue_pixels > 0
+
+
+    @property
+    def number_of_detected_classes(self) -> int:
+        """
+        Returns the number of semantic classes present.
+        """
+        if self.detected_classes is None:
+            return 0
+
+        return len(self.detected_classes)
 
     @property
     def has_image(self) -> bool:

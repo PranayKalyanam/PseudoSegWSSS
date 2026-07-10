@@ -6,14 +6,21 @@ Coordinates the complete patch extraction stage.
 The PatchLoader itself contains no image processing logic.
 Instead, it orchestrates reusable modules responsible for
 
-    • Patch candidate generation
-    • Tissue filtering
-    • Coordinate computation
-    • Overlap handling
-    • Patch extraction
-    • Weak label generation
-    • Patch metadata generation
-    • Patch collection
+Pipeline
+--------
+CoordinateGenerator
+        ↓
+OverlapHandler
+        ↓
+PatchExtractor
+        ↓
+TissuePatchFilter
+        ↓
+WeakLabelGenerator
+        ↓
+PatchMetadataGenerator
+        ↓
+PatchCollectionBuilder
 
 The output is stored inside
 
@@ -54,13 +61,13 @@ class PatchLoader:
 
     def __init__(
         self,
-        config: get_config(),
+        config,
         logger=None,
         patch_size: int = 224,
         overlap: float = 0.50,
         tissue_threshold: float = 0.50,
     ):
-
+        self.config = get_config(),
         self.patch_size = patch_size
         self.overlap = overlap
         self.tissue_threshold = tissue_threshold
@@ -149,6 +156,7 @@ class PatchLoader:
             valid_patches,
             image=image_data.working_image,
             annotation=image_data.working_mask,
+            source_filename=patient.image_filename
         )
 
         # -----------------------------------------
@@ -168,7 +176,8 @@ class PatchLoader:
         metadata_generator = PatchMetadataGenerator()
 
         patches = metadata_generator.generate(
-            labeled_patches
+            labeled_patches,
+            original_filename=patient.image_filename,
         )
 
         # -----------------------------------------
