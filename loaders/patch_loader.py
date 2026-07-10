@@ -1,162 +1,216 @@
-from __future__ import annotations
+"""
+patch_loader.py
 
-from pathlib import Path
+Coordinates the complete patch extraction stage.
 
+The PatchLoader itself contains no image processing logic.
+Instead, it orchestrates reusable modules responsible for
+
+    • Patch candidate generation
+    • Tissue filtering
+    • Coordinate computation
+    • Overlap handling
+    • Patch extraction
+    • Weak label generation
+    • Patch metadata generation
+    • Patch collection
+
+The output is stored inside
+
+    Patient.patch_dataset
+"""
+
+from typing import Optional
+
+from configs.config import get_config
+
+# -----------------------------
+# Data Classes
+# -----------------------------
+from data.patient import Patient
 from data.patch.patch_dataset import PatchDataset
-from data.patch.patch_metadata import PatchMetadata
 
-from methods.patch.coordinate_transform import CoordinateTransform
+# -----------------------------
+# Patch Processing Modules
+# -----------------------------
+from methods.patch.patch_generator import PatchGenerator
+from methods.patch.coordinate_generator import CoordinateGenerator
+from methods.patch.overlap_handler import OverlapHandler
+from methods.patch.tissue_patch_filter import TissuePatchFilter
 from methods.patch.patch_extractor import PatchExtractor
-from methods.patch.patch_filter import PatchFilter
-from methods.patch.patch_label_generator import PatchLabelGenerator
-from methods.patch.patch_naming import PatchNaming
-from methods.patch.patch_statistics import PatchStatistics
-from methods.patch.sliding_window import SlidingWindow
-
-from utils.logger import get_logger
+from methods.patch.weak_label_generator import WeakLabelGenerator
+from methods.patch.patch_metadata_generator import PatchMetadataGenerator
+from methods.patch.patch_collection_builder import PatchCollectionBuilder
 
 
 class PatchLoader:
     """
-    Extracts valid image patches from tissue regions.
+    Coordinates the complete patch extraction pipeline.
 
-    Responsibilities
-    ----------------
-    1. Generate candidate windows.
-    2. Extract image and annotation patches.
-    3. Filter invalid patches.
-    4. Generate weak labels.
-    5. Compute statistics.
-    6. Create metadata.
-    7. Populate Patient.patch_dataset.
+    The loader does not implement any image processing logic.
+    It simply invokes reusable processing modules and stores
+    the generated PatchDataset inside the Patient object.
     """
 
-    def __init__(self, config):
-
-        self.config = config
-
-        self.logger = get_logger(
-            self.__class__.__name__
-        )
-
-        self.window_generator = SlidingWindow(
-            patch_size=config.patch_size,
-            overlap=config.overlap,
-        )
-
-        self.extractor = PatchExtractor()
-
-        self.filter = PatchFilter(
-            minimum_tissue_percentage=config.tissue_threshold,
-        )
-
-    def load(self, patient):
-
-        self.logger.info(
-            "Extracting patches for %s",
-            patient.patient_id,
-        )
-
-        dataset = PatchDataset()
-
-        working_image = patient.working_image
-        working_mask = patient.working_mask
-        tissue_mask = patient.tissue_binary_mask
-
-        metadata_index = 0
-
-        for coordinate in self.window_generator.generate(
-            tissue_regions=patient.tissue_regions,
-            image_width=working_image.shape[1],
-            image_height=working_image.shape[0],
-        ):
-
-            image_patch, mask_patch = self.extractor.extract(
-                image=working_image,
-                mask=working_mask,
-                coordinate=coordinate,
-            )
-
-            tissue_crop = tissue_mask[
-                coordinate.y:coordinate.y + coordinate.height,
-                coordinate.x:coordinate.x + coordinate.width,
-            ]
-
-            if not self.filter.keep(
-                image_patch, mask_patch,
-                tissue_crop,
-            ):
-                continue
-
-            label = PatchLabelGenerator.generate(
-                patch.mask
-            )
-
-            patch.label = label
-
-            patch.statistics = PatchStatistics.compute(
-                patch,
-                tissue_crop,
-            )
-
-            original_coordinate = (
-                CoordinateTransform.working_to_original(
-                    coordinate,
-                    patient.metadata.scale_factor,
-                )
-            )
-
-            filename = PatchNaming.generate(
-                original_filename=patient.image_filename,
-                global_x=original_coordinate.x,
-                global_y=original_coordinate.y,
-                label=label,
-            )
-
-            metadata = PatchMetadata(
-                patch_id=metadata_index,
-                patient_id=patient.patient_id,
-                patch_name=Path(filename).stem,
-                image_path=None,
-                mask_path=None,
-                coordinate=original_coordinate,
-                tissue_region_id=-1,
-                tissue_percentage=patch.statistics.tissue_percentage,
-                magnification=patient.metadata.target_magnification,
-                label=label,
-                label_string=PatchLabelGenerator.binary_string(
-                    label
-                ),
-                filename=filename,
-                generated=True,
-                generator=self.__class__.__name__,
-                detected_classes=patch.statistics.detected_classes,
-            )
-
-            patch.metadata = metadata
-
-            dataset.patches.append(
-                patch
-            )
-
-            metadata_index += 1
-
-        patient.patch_dataset = dataset
-
-        self.logger.info(
-            "Extracted %d valid patches.",
-            len(dataset.patches),
-        )
-
-        return patient
-
-    def load_all(
+    def __init__(
         self,
-        patients,
+        config: get_config(),
+        logger=None,
+        patch_size: int = 224,
+        overlap: float = 0.50,
+        tissue_threshold: float = 0.50,
     ):
 
+        self.patch_size = patch_size
+        self.overlap = overlap
+        self.tissue_threshold = tissue_threshold
+
+    # ---------------------------------------------------------
+
+    def load(self, patient: Patient) -> Patient:
+        """
+        Execute complete patch extraction pipeline.
+
+        Parameters
+        ----------
+        patient : Patient
+
+        Returns
+        -------
+        Patient
+        """
+
+        # -----------------------------------------
+        # Retrieve previously computed information
+        # -----------------------------------------
+
+        image_data = patient.image_data
+        tissue_mask = patient.tissue_mask
+
+        # -----------------------------------------
+        # Generate candidate coordinates
+        # -----------------------------------------
+
+        coordinate_generator = CoordinateGenerator(
+            patch_size=self.patch_size,
+            overlap=self.overlap,
+        )
+
+        candidate_coordinates = coordinate_generator.generate(
+            image=image_data.working_image,
+            tissue_regions=tissue_mask.regions,
+        )
+
+        # -----------------------------------------
+        # Handle overlap strategy
+        # -----------------------------------------
+
+        overlap_handler = OverlapHandler(
+            patch_size=self.patch_size,
+            overlap=self.overlap,
+        )
+
+        coordinates = overlap_handler.process(
+            candidate_coordinates
+        )
+
+        # -----------------------------------------
+        # Generate candidate patches
+        # -----------------------------------------
+
+        patch_generator = PatchGenerator()
+
+        candidate_patches = patch_generator.generate(
+            # image=image_data.working_image,
+            # mask=image_data.working_mask,
+            coordinates=coordinates,
+        )
+
+        # -----------------------------------------
+        # Remove patches with insufficient tissue
+        # -----------------------------------------
+
+        tissue_filter = TissuePatchFilter(
+            threshold=self.tissue_threshold
+        )
+
+        valid_patches = tissue_filter.filter(
+            candidate_patches,
+            tissue_mask.mask,
+        )
+
+        # -----------------------------------------
+        # Extract image and annotation patches
+        # -----------------------------------------
+
+        extractor = PatchExtractor()
+
+        extracted_patches = extractor.extract(
+            valid_patches,
+            image=image_data.working_image,
+            annotation=image_data.working_mask,
+        )
+
+        # -----------------------------------------
+        # Generate weak labels
+        # -----------------------------------------
+
+        label_generator = WeakLabelGenerator()
+
+        labeled_patches = label_generator.generate(
+            extracted_patches
+        )
+
+        # -----------------------------------------
+        # Generate metadata
+        # -----------------------------------------
+
+        metadata_generator = PatchMetadataGenerator()
+
+        patches = metadata_generator.generate(
+            labeled_patches
+        )
+
+        # -----------------------------------------
+        # Build patch dataset
+        # -----------------------------------------
+
+        builder = PatchCollectionBuilder()
+
+        patch_dataset: PatchDataset = builder.build(
+            patient=patient,
+            patches=patches,
+        )
+
+        # -----------------------------------------
+        # Update patient
+        # -----------------------------------------
+
+        patient.patch_dataset = patch_dataset
+
+        return patient
+    
+
+    def load_all(self, patients: list[Patient]) -> list[Patient]:
+        """
+        Execute complete patch extraction pipeline for a collection of patients.
+
+        Parameters
+        ----------
+        patients : list[Patient]
+
+        Returns
+        -------
+        list[Patient]
+        """
+        processed_patients = []
+        
         for patient in patients:
-
-            self.load(patient)
-
-        return patients
+            # You could add logging here if self.logger is implemented, e.g.:
+            # if hasattr(self, 'logger') and self.logger:
+            #     self.logger.info(f"Processing patches for patient: {patient.id}")
+            
+            processed_patient = self.load(patient)
+            processed_patients.append(processed_patient)
+            
+        return processed_patients

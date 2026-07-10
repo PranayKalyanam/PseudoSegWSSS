@@ -5,19 +5,18 @@ from configs.config import get_config
 from loaders.patient_loader import PatientLoader
 from loaders.image_loader import ImageLoader
 from loaders.tissue_loader import TissueLoader
-from loaders.patch_loader import PatchLoader
 
-from methods.visualization.patch_visualizer import PatchVisualizer
+from methods.patch.coordinate_generator import CoordinateGenerator
 
 from utils.logger import get_logger
 
 
 def main():
 
-    logger = get_logger("PatchLoaderTest")
+    logger = get_logger("CoordinateGeneratorTest")
 
     logger.info("=" * 80)
-    logger.info("PATCH LOADER TEST")
+    logger.info("COORDINATE GENERATOR TEST")
     logger.info("=" * 80)
 
     # --------------------------------------------------
@@ -81,102 +80,108 @@ def main():
     logger.info("")
 
     # --------------------------------------------------
-    # Patch Extraction
+    # Coordinate Generator
     # --------------------------------------------------
 
-    logger.info("Generating patches...")
-
-    patch_loader = PatchLoader(
+    coordinate_generator = CoordinateGenerator(
         config=config,
-        logger=logger,
+        patch_size=0,
+        overlap=0,
     )
 
-    patients = patch_loader.load_all(
-        patients,
-    )
-
-    logger.info("")
-
-    # --------------------------------------------------
-    # Results
-    # --------------------------------------------------
-
     logger.info("=" * 80)
-    logger.info("PATCH EXTRACTION RESULTS")
+    logger.info("COORDINATE GENERATION RESULTS")
     logger.info("=" * 80)
 
-    for index, patient in enumerate(
+    for patient_index, patient in enumerate(
         patients,
         start=1,
     ):
 
         logger.info("")
-        logger.info("-" * 80)
-        logger.info("Patient %d", index)
-        logger.info("-" * 80)
-
+        logger.info("=" * 80)
         logger.info(
-            "Patient ID              : %s",
+            "PATIENT %d : %s",
+            patient_index,
             patient.patient_id,
         )
+        logger.info("=" * 80)
 
         logger.info(
-            "Number of Patches       : %d",
-            patient.number_of_patches,
-        )
-
-        if not patient.has_patches:
-            logger.warning(
-                "No patches generated."
-            )
-            continue
-
-        stats = patient.patch_dataset.statistics
-
-        logger.info("")
-        logger.info("Dataset Statistics")
-
-        logger.info(
-            "Average Tissue %%       : %.2f",
-            stats.average_tissue_percentage,
+            "Original Image Shape : %s",
+            patient.image.shape,
         )
 
         logger.info(
-            "Average Patch Area      : %.2f",
-            stats.average_patch_area,
+            "Original Mask Shape  : %s",
+            patient.mask.shape,
         )
 
         logger.info(
-            "Class Distribution      : %s",
-            stats.class_distribution,
+            "Working Image Shape : %s",
+            patient.working_image.shape,
+        )
+
+        logger.info(
+            "Number of Tissue Regions : %d",
+            patient.number_of_tissue_regions,
         )
 
         logger.info("")
 
-        for patch in patient.patches:
+        logger.info("Tissue Regions")
+
+        for region in patient.tissue_regions:
 
             logger.info(
-                "Patch %-5d "
-                "Coord=(%d,%d,%d,%d) "
-                "Tissue=%.2f%% "
-                "Classes=%s",
-                patch.patch_id,
-                patch.x,
-                patch.y,
-                patch.width,
-                patch.height,
-                patch.tissue_percentage * 100,
-                patch.detected_classes,
+                "Region %-3d "
+                "BBox=(%d,%d,%d,%d) "
+                "Area=%d",
+                region.region_id,
+                region.x,
+                region.y,
+                region.width,
+                region.height,
+                region.area,
             )
 
-        PatchVisualizer.save(
-            patient,
-            f"outputs/patch_loader/{patient.patient_id}",
+        logger.info("")
+
+        coordinates = coordinate_generator.generate(
+            patient.working_image,
+            patient.tissue_regions,
         )
+
+        logger.info(
+            "Coordinates Generated : %d",
+            len(coordinates),
+        )
+
+        logger.info("")
+
+        for index, coordinate in enumerate(coordinates):
+
+            logger.info(
+                "[%04d] "
+                "x=%4d "
+                "y=%4d "
+                "w=%3d "
+                "h=%3d "
+                "area=%6d",
+                index,
+                coordinate.x,
+                coordinate.y,
+                coordinate.width,
+                coordinate.height,
+                coordinate.area,
+            )
+
+        logger.info("")
+        logger.info("-" * 80)
 
     logger.info("")
     logger.info("=" * 80)
-    logger.info("PATCH LOADER TEST PASSED")
+    logger.info("COORDINATE GENERATOR TEST FINISHED")
     logger.info("=" * 80)
 
 
