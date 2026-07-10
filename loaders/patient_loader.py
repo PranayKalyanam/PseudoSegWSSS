@@ -28,7 +28,7 @@ from configs.config import get_config
 from data.patient import Patient
 from data.image.image_pair import ImagePair
 
-from methods.imageLoader.image_discovery import pair_images_and_masks
+from methods.image.image_discovery import pair_images_and_masks
 
 from utils.logger import get_logger
 from utils.validator import Validator

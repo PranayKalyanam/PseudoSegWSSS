@@ -8,7 +8,8 @@ def main():
     config = get_config()
 
     logger = get_logger(
-        "PatientLoaderTest"
+        "PatientLoaderTest",
+        log_dir="logs"
     )
 
     logger.info("=" * 80)

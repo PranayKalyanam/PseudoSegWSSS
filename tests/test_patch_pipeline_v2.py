@@ -19,7 +19,7 @@ from utils.logger import get_logger
 
 def main():
 
-    logger = get_logger("PatchPipelineV2Test")
+    logger = get_logger("PatchPipelineV2Test", log_dir="logs")
 
     logger.info("=" * 80)
     logger.info("PATCH PIPELINE V2 TEST")

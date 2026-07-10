@@ -1,0 +1,16 @@
+[2026-07-10 22:55:29] [INFO] [ClassDistribution] Scanning masks across 2 patient folder(s)...
+[2026-07-10 22:55:30] [INFO] [ClassDistribution] ========================================================================================================================
+[2026-07-10 22:55:30] [INFO] [ClassDistribution] Class ID   | Category Name                  | Patch Count     | % of Total Patches   | Pixel Count     | Percentage
+[2026-07-10 22:55:30] [INFO] [ClassDistribution] ========================================================================================================================
+[2026-07-10 22:55:30] [INFO] [ClassDistribution] 0          | Outside / Background           | 0               | 0.00                 | 0               | 0.00%
+[2026-07-10 22:55:30] [INFO] [ClassDistribution] 1          | Tumor (Epithelium)             | 117             | 91.41                | 3,095,291       | 48.19%
+[2026-07-10 22:55:30] [INFO] [ClassDistribution] 2          | Stroma (Lamina Propria)        | 123             | 96.09                | 1,881,655       | 29.30%
+[2026-07-10 22:55:30] [INFO] [ClassDistribution] 3          | Inflammatory Infiltrate        | 55              | 42.97                | 364,013         | 5.67%
+[2026-07-10 22:55:30] [INFO] [ClassDistribution] 4          | Necrosis / Debris              | 45              | 35.16                | 1,052,097       | 16.38%
+[2026-07-10 22:55:30] [INFO] [ClassDistribution] 5          | Glandular / Secretions         | 3               | 2.34                 | 4,076           | 0.06%
+[2026-07-10 22:55:30] [INFO] [ClassDistribution] 6          | Blood / Vessel                 | 0               | 0.00                 | 0               | 0.00%
+[2026-07-10 22:55:30] [INFO] [ClassDistribution] 7          | Metaplasia                     | 0               | 0.00                 | 0               | 0.00%
+[2026-07-10 22:55:30] [INFO] [ClassDistribution] ========================================================================================================================
+[2026-07-10 22:55:30] [INFO] [ClassDistribution] Total Unique Patches Evaluated: 128
+[2026-07-10 22:55:30] [INFO] [ClassDistribution] Total Aggregated Pixels: 6,422,528
+[2026-07-10 22:55:30] [INFO] [ClassDistribution] Note: Percentages will not add up to 100% because one patch can contain multiple semantic classes.

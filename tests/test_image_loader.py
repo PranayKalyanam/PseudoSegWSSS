@@ -39,7 +39,7 @@ def main():
 
     config = get_config()
 
-    logger = get_logger("ImageLoaderTest")
+    logger = get_logger("ImageLoaderTest", log_dir="logs",)
 
     logger.info("=" * 80)
     logger.info("IMAGE LOADER TEST")
