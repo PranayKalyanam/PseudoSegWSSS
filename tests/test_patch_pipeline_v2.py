@@ -146,6 +146,7 @@ def main():
             coordinates=coordinates,
             image=patient.image,
             annotation=patient.mask,
+            source_filename=patient.image_filename,
         )
 
         logger.info(
@@ -203,6 +204,7 @@ def main():
 
         patches = metadata_generator.generate(
             patches,
+            original_filename=patient.image_filename,
         )
 
         ##################################################
@@ -250,7 +252,26 @@ def main():
         logger.info("Patch Details")
         logger.info("-" * 80)
 
-        for patch in dataset.patches[:20]:
+        # Create an output directory for the raw patches
+        import os
+        import cv2  # or torch, numpy, etc.
+        patch_img_dir = f"outputs/patches/{patient.patient_id}/imgs"
+        os.makedirs(patch_img_dir, exist_ok=True)
+        patch_mask_dir = f"outputs/patches/{patient.patient_id}/mask"
+        os.makedirs(patch_mask_dir, exist_ok=True)
+
+        for patch in dataset.patches:
+            # Save the image patch
+            # img_path = os.path.join(patch_img_dir, f"patch_{patch.patch_id}_img.png")
+            img_path = os.path.join(patch_img_dir, patch.metadata.image_filename)
+
+            cv2.imwrite(img_path, patch.image_patch)
+            
+            # Save the mask patch
+            # mask_path = os.path.join(patch_mask_dir, f"patch_{patch.patch_id}_mask.png")
+            mask_path = os.path.join(patch_mask_dir, patch.metadata.annotation_filename)
+
+            cv2.imwrite(mask_path, patch.annotation_patch)
 
             logger.info(
                 "Patch %04d",

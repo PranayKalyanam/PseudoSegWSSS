@@ -1,21 +1,17 @@
 """
 tissue_patch_filter.py
 
-Filters candidate patches based on tissue coverage.
-
-The TissuePatchFilter determines whether each candidate patch
-contains sufficient tissue to be retained for later processing.
-Image patches are not extracted at this stage. Instead, tissue
-coverage is computed directly from the binary tissue mask using
-the patch coordinates.
+Filters extracted patches according to tissue coverage.
 
 Responsibilities
 ----------------
-1. Compute tissue coverage for every candidate patch.
-2. Remove patches with insufficient tissue.
-3. Store tissue statistics inside the Patch object.
-4. Return valid candidate patches.
+1. Compute tissue percentage from annotation patch.
+2. Store tissue statistics in Patch.
+3. Reject patches below threshold.
+4. Return valid patches.
 """
+
+from __future__ import annotations
 
 from typing import List
 
@@ -26,30 +22,31 @@ from data.patch.patch import Patch
 
 class TissuePatchFilter:
     """
-    Filters candidate patches according to tissue coverage.
+    Filters extracted patches based on tissue coverage.
+
+    This class operates only on extracted Patch objects.
     """
 
     def __init__(
         self,
         threshold: float = 0.50,
+        background_label: int = 0,
     ):
         self.threshold = threshold
+        self.background_label = background_label
 
     # ---------------------------------------------------------
 
     def filter(
         self,
         patches: List[Patch],
-        tissue_mask: np.ndarray,
     ) -> List[Patch]:
         """
-        Filter patches according to tissue coverage.
+        Filter patches using tissue percentage.
 
         Parameters
         ----------
         patches : List[Patch]
-
-        tissue_mask : np.ndarray
 
         Returns
         -------
@@ -60,46 +57,37 @@ class TissuePatchFilter:
 
         for patch in patches:
 
-            coverage = self._compute_tissue_coverage(
-                patch,
-                tissue_mask,
+            tissue_percentage = self._compute_tissue_percentage(
+                patch.annotation_patch,
             )
 
-            patch.tissue_percentage = coverage
+            patch.tissue_percentage = tissue_percentage
 
-            if coverage >= self.threshold:
+            if tissue_percentage >= self.threshold:
                 valid_patches.append(patch)
 
         return valid_patches
 
     # ---------------------------------------------------------
 
-    def _compute_tissue_coverage(
+    def _compute_tissue_percentage(
         self,
-        patch: Patch,
-        tissue_mask: np.ndarray,
+        annotation_patch: np.ndarray,
     ) -> float:
         """
-        Compute the percentage of tissue inside one patch.
+        Compute tissue percentage from an annotation patch.
+
+        Any pixel whose label is not the background label
+        is considered tissue.
         """
 
-        coordinate = patch.coordinate
-
-        x = coordinate.x
-        y = coordinate.y
-        w = coordinate.width
-        h = coordinate.height
-
-        patch_mask = tissue_mask[
-            y:y+h,
-            x:x+w,
-        ]
-
-        total_pixels = patch_mask.size
+        total_pixels = annotation_patch.size
 
         if total_pixels == 0:
             return 0.0
 
-        tissue_pixels = np.count_nonzero(patch_mask)
+        tissue_pixels = np.count_nonzero(
+            annotation_patch != self.background_label
+        )
 
         return tissue_pixels / total_pixels

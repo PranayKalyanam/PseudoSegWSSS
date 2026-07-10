@@ -18,11 +18,8 @@ Responsibilities
 
 from typing import List
 
-from pathlib import Path
-
 from data.patch.patch import Patch
 from data.patch.patch_metadata import PatchMetadata
-
 
 
 class PatchMetadataGenerator:
@@ -44,7 +41,6 @@ class PatchMetadataGenerator:
     def generate(
         self,
         patches: List[Patch],
-        original_filename: str,
     ) -> List[Patch]:
         """
         Generate metadata for every patch.
@@ -53,8 +49,7 @@ class PatchMetadataGenerator:
         for patch in patches:
 
             metadata = self._create_metadata(
-                patch,
-                original_filename=original_filename,
+                patch
             )
 
             patch.metadata = metadata
@@ -66,7 +61,6 @@ class PatchMetadataGenerator:
     def _create_metadata(
         self,
         patch: Patch,
-        original_filename: str,
     ) -> PatchMetadata:
         """
         Create metadata for a single patch.
@@ -87,13 +81,11 @@ class PatchMetadataGenerator:
 
             # Filenames
             image_filename=self._image_filename(
-                patch,
-                original_filename=Path(original_filename).stem,
+                patch.patch_id
             ),
 
             annotation_filename=self._annotation_filename(
-                patch,
-                original_filename=Path(original_filename).stem,
+                patch.patch_id
             ),
 
             # Coordinate
@@ -127,57 +119,16 @@ class PatchMetadataGenerator:
 
     def _image_filename(
         self,
-        patch: Patch,
-        original_filename: str,
+        patch_id: int,
     ) -> str:
 
-        x = patch.coordinate.x
-        y = patch.coordinate.y
-
-        # return (
-        #     f"patch_{patch.patch_id:06d}"
-        #     f"_x{x}_y{y}"
-        #     f"{self.image_extension}"
-        # )
-        return (
-                f"{original_filename}"
-                f"_patch_{patch.patch_id:06d}"
-                f"_x{x}"
-                f"_y{y}"
-                f"_{patch.weak_label}"
-                f"_img"
-                f"{self.image_extension}"
-        )
-
-    def _annotation_filename(
-            self,
-            patch: Patch,
-            original_filename: str,
-    ) -> str:
-
-        x = patch.coordinate.x
-        y = patch.coordinate.y
-
-        # return (
-        #     f"patch_{patch.patch_id:06d}"
-        #     f"_x{x}_y{y}"
-        #     f"{self.image_extension}"
-        # )
-        return (
-                f"{original_filename}"
-                f"_patch_{patch.patch_id:06d}"
-                f"_x{x}"
-                f"_y{y}"
-                f"_{patch.weak_label}"
-                f"_mask"
-                f"{self.annotation_extension}"
-            )
+        return f"patch_{patch_id:06d}{self.image_extension}"
 
     # ---------------------------------------------------------
 
-    # def _annotation_filename(
-    #     self,
-    #     patch_id: int,
-    # ) -> str:
+    def _annotation_filename(
+        self,
+        patch_id: int,
+    ) -> str:
 
-    #     return f"mask_{patch_id:06d}{self.annotation_extension}"
+        return f"mask_{patch_id:06d}{self.annotation_extension}"
